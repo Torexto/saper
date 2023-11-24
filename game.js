@@ -94,7 +94,7 @@ class Cell {
         : (this.element.className = `cell darkCellUncovered`);
       this.element.querySelector("span").style.visibility = "visible";
       toDiscover--;
-      CheckWin();
+      if (toDiscover === 0) Victory();
     }
   }
 
@@ -175,15 +175,13 @@ function NewGame() {
 
   // Placing numbers on board
   cells.forEach((cell) => {
-    !cell.isBomb ? cell.UpdateNumbers() : null;
+    if (!cell.isBomb) cell.UpdateNumbers();
   });
 }
 
-function CheckWin() {
-  if (toDiscover === 0) {
-    alert("You Win!");
-    NewGame();
-  }
+function Victory() {
+  alert("You Win!");
+  NewGame();
 }
 function GameOver() {
   alert("You Lose!");
