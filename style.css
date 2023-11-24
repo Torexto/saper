@@ -1,0 +1,91 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #787878;
+}
+
+.container {
+  border: 3px solid #000;
+  transform: scale(120%);
+}
+
+.menu {
+  background-color: #4a752c;
+  border-bottom: 3px solid #000;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 50px;
+  color: #fff;
+}
+
+.flags,
+.time {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn {
+  background: transparent;
+  border: 1px solid #fff;
+  padding: 5px 10px;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: #c9c9c9;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.board {
+  width: 504px;
+  height: 504px;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+}
+
+@media only screen and (max-width: 620px) {
+  .board {
+    width: 80vw;
+    height: 80vw;
+  }
+}
+
+.cell {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cell * {
+  visibility: hidden;
+}
+
+.brightCell {
+  background: #aad751;
+}
+
+.darkCell {
+  background: #a2d149;
+}
+
+.brightCellUncovered {
+  background: #e5c29f;
+}
+
+.darkCellUncovered {
+  background: #d7b899;
+}
