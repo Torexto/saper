@@ -1,5 +1,5 @@
 const board = document.querySelector(".board");
-const time = document.querySelector("#time");
+const timer = document.querySelector("#time");
 const newGameBtn = document.querySelector("#newGameBtn");
 const flags = document.querySelector("#flags");
 
@@ -15,6 +15,7 @@ let howManyFlagsLeft = numOfBombs;
 
 class Cell {
   constructor(index) {
+    // Set variables
     this.index = index;
     this.isBomb = false;
     this.isUncovered = false;
@@ -23,58 +24,37 @@ class Cell {
 
     this.element = document.createElement("div");
 
+    // Set properties
     this.element.setAttribute("index", this.index);
     this.index % 2 == 0 ? (this.isBright = true) : (this.isBright = false);
     this.isBright
       ? (this.element.className = `cell brightCell`)
       : (this.element.className = `cell darkCell`);
 
+    this.AddClickEvents();
+
     board.appendChild(this.element);
   }
 
-  AddClickEvent() {
+  // Add listening for events
+  AddClickEvents() {
+    // Discovering fields
     this.element.addEventListener("click", () => {
-      if (this.isBomb) {
-        alert("You Lose!");
-        NewGame();
+      this.isBomb ? GameOver() : this.Discover();
+    });
+
+    // Set flags
+    this.element.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+      if (this.isFlagged) {
+        RemoveFlag();
       } else {
-        this.Discover();
+        this.SetFlag();
       }
     });
-
-    this.element.addEventListener("mouseover", () => {
-      document.addEventListener("keydown", this.SetFlag);
-    });
-
-    this.element.addEventListener("mouseout", () => {
-      document.removeEventListener("keydown", this.SetFlag);
-    });
-
-    this.element.addEventListener(
-      "contextmenu",
-      (event) => {
-        event.preventDefault();
-        if (this.isFlagged) {
-          this.Unflag();
-        } else {
-          this.Flag();
-        }
-      },
-      false
-    );
   }
 
-  SetFlag = (event) => {
-    if (event.key === "f") {
-      if (this.isFlagged) {
-        this.Unflag();
-      } else {
-        this.Flag();
-      }
-    }
-  };
-
-  Flag() {
+  SetFlag() {
     if (howManyFlagsLeft > 0 && !this.isUncovered) {
       this.isFlagged = true;
       this.element.innerHTML =
@@ -85,7 +65,7 @@ class Cell {
     }
   }
 
-  Unflag() {
+  RemoveFlag() {
     this.isFlagged = false;
     this.element.querySelector("span").style.visibility = "hidden";
     this.element.innerHTML = `<span>${this.numOfNearBombs || ""}</span>`;
@@ -104,16 +84,17 @@ class Cell {
 
   Discover() {
     if (!this.isUncovered) {
+      if (toDiscover === boardSize - numOfBombs) {
+        Timer();
+      }
+
       this.isUncovered = true;
       this.isBright
         ? (this.element.className = `cell brightCellUncovered`)
         : (this.element.className = `cell darkCellUncovered`);
       this.element.querySelector("span").style.visibility = "visible";
       toDiscover--;
-      if (toDiscover === 0) {
-        alert("You Win!");
-        NewGame();
-      }
+      CheckWin();
     }
   }
 
@@ -141,42 +122,48 @@ class Cell {
     }
     return neighbors;
   }
+
+  UpdateNumbers() {
+    this.element.innerHTML = `<span>${this.numOfNearBombs || ""}</span>`;
+  }
 }
 
+// Clearing board
 function ClearBoard() {
   while (board.firstChild) {
     board.removeChild(board.firstChild);
   }
 }
 
+// Change timer
 function Timer() {
   intervalID = setInterval(() => {
-    time.innerHTML = parseInt(time.innerHTML) + 1;
+    timer.innerHTML = parseInt(timer.innerHTML) + 1;
   }, 1000);
 }
 
+// Preparing for a new game
 function NewGame() {
   ClearBoard();
 
   howManyFlagsLeft = numOfBombs;
-
   toDiscover = boardSize - numOfBombs;
+
   flags.innerHTML = numOfBombs;
 
-  time.innerHTML = 0;
-
+  // Clear timer
+  timer.innerHTML = 0;
   clearInterval(intervalID);
 
-  Timer();
-
+  // Creating a new board
   const cells = [];
 
   for (let i = 0; i < boardSize; i++) {
     const cell = new Cell(i);
-    cell.AddClickEvent();
     cells.push(cell);
   }
 
+  // Placing bomb on board
   for (let i = 0; i < numOfBombs; i++) {
     let randomIndex;
     do {
@@ -186,11 +173,21 @@ function NewGame() {
     cells[randomIndex].PlaceBomb(cells);
   }
 
+  // Placing numbers on board
   cells.forEach((cell) => {
-    if (!cell.isBomb) {
-      cell.element.innerHTML = `<span>${cell.numOfNearBombs || ""}</span>`;
-    }
+    !cell.isBomb ? cell.UpdateNumbers() : null;
   });
+}
+
+function CheckWin() {
+  if (toDiscover === 0) {
+    alert("You Win!");
+    NewGame();
+  }
+}
+function GameOver() {
+  alert("You Lose!");
+  NewGame();
 }
 
 document.addEventListener("DOMContentLoaded", NewGame);
