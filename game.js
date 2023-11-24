@@ -49,6 +49,19 @@ class Cell {
     this.element.addEventListener("mouseout", () => {
       document.removeEventListener("keydown", this.SetFlag);
     });
+
+    this.element.addEventListener(
+      "contextmenu",
+      (event) => {
+        event.preventDefault();
+        if (this.isFlagged) {
+          this.Unflag();
+        } else {
+          this.Flag();
+        }
+      },
+      false
+    );
   }
 
   SetFlag = (event) => {
