@@ -47,7 +47,7 @@ class Cell {
     this.element.addEventListener("contextmenu", (event) => {
       event.preventDefault();
       if (this.isFlagged) {
-        RemoveFlag();
+        this.RemoveFlag();
       } else {
         this.SetFlag();
       }
